@@ -4,6 +4,7 @@
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Abhishek Raj">
 <title>Jaroi Production Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -209,6 +210,13 @@ header .seg button.on{background:linear-gradient(90deg,#2ee6c5,#5aa9ff);color:#0
 [data-theme="light"] .dt .pager{border-top-color:#d3dadf;color:#4d6a78}
 [data-theme="light"] .dt .pager button{background:rgba(14,124,107,.08);border-color:rgba(14,124,107,.4);color:#0e7c6b}
 [data-theme="light"] .dt .empty{color:#4d6a78}
+.credit{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px;padding:18px 24px 26px;color:var(--muted);font-size:13px;letter-spacing:.04em;border-top:1px solid var(--line)}
+.credit b{font:700 15px var(--head);letter-spacing:.08em;text-transform:uppercase;background:linear-gradient(95deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.credit i{width:5px;height:5px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);display:inline-block}
+.typed{display:inline-flex;align-items:center;min-width:27ch;font:500 13.5px ui-monospace,Menlo,Consolas,monospace;color:var(--acc);letter-spacing:.03em}
+.caret{display:inline-block;width:2px;height:1.15em;margin-left:3px;background:var(--teal);box-shadow:0 0 8px var(--teal);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}}
 @media (max-width:640px){.charts{grid-template-columns:1fr}main{padding:14px}}
 </style>
 </head>
@@ -233,7 +241,9 @@ header .seg button.on{background:linear-gradient(90deg,#2ee6c5,#5aa9ff);color:#0
   </div>
 </header>
 <nav id="tabs" aria-label="Sheets"></nav>
+<!-- Jaroi Production Dashboard - created by Abhishek Raj -->
 <main id="view"><div class="empty">Loading…</div></main>
+<footer class="credit"><i aria-hidden="true"></i><span class="typed" aria-label="Jaroi Interiors"><span id="typeTxt" aria-hidden="true"></span><u class="caret" aria-hidden="true"></u></span></footer>
 
 <script>
 /* ============ configuration: what to show for each sheet ============ */
@@ -670,6 +680,19 @@ function setTheme(t,first){
   if(!first&&DATA) render();
 }
 (function(){let t='dark';try{t=localStorage.getItem('jaroiTheme')||'dark';}catch(e){} setTheme(t==='light'?'light':'dark',true);})();
+(function(){
+  const el=document.getElementById('typeTxt'); if(!el) return;
+  const text='© 2016–2026 Jaroi Interiors LLP. All Rights Reserved.';
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=text;return;}
+  let i=0,dir=1;
+  (function tick(){
+    i+=dir; el.textContent=text.slice(0,i);
+    let wait=dir>0?70+Math.random()*60:35;
+    if(dir>0&&i===text.length){dir=-1;wait=2600;}
+    else if(dir<0&&i===0){dir=1;wait=700;}
+    setTimeout(tick,wait);
+  })();
+})();
 load();
 </script>
 </body>
