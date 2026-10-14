@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jaroi Production Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#17262e; --muted:#5f7079; --bg:#eceff1; --panel:#fff; --line:#d3dadf;
+  --teal:#0e7c6b; --blue:#2f5d8c; --amber:#c98a12; --red:#b83a2a; --plum:#6b4e7e; --slate:#7a8b94;
+  --head:'Barlow Condensed','Arial Narrow',sans-serif; --body:'Barlow',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--body)}
+header{position:relative;overflow:hidden;color:#fff;padding:18px 28px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;
+  background:radial-gradient(700px 220px at 0% 0%,rgba(46,230,197,.28),transparent 65%),radial-gradient(600px 200px at 100% 100%,rgba(90,169,255,.22),transparent 65%),#0b161c;
+  border-bottom:1px solid #1f3a44}
+header::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#2ee6c5 30%,#5aa9ff 70%,transparent);opacity:.8}
+.brand{display:flex;align-items:center;gap:16px}
+.mark{width:46px;height:46px;flex:none;filter:drop-shadow(0 0 10px rgba(46,230,197,.55))}
+header h1{font:700 32px/1.05 var(--head);margin:0;letter-spacing:.02em;text-transform:uppercase;
+  background:linear-gradient(95deg,#fff 0%,#aef5e8 55%,#8fc4ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+header h1 span{font-weight:500;letter-spacing:.22em;font-size:.62em;display:block;color:#7fd6c6;-webkit-text-fill-color:#7fd6c6;margin-bottom:3px}
+header small{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:3px 12px 3px 10px;border-radius:99px;font-size:12.5px;color:#bcd3d9;
+  background:rgba(255,255,255,.05);border:1px solid #24424d;letter-spacing:.02em}
+header small::before{content:'';width:7px;height:7px;border-radius:50%;background:#2ee6c5;box-shadow:0 0 10px #2ee6c5;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){header small::before{animation:none}}
+.hdr-tools{margin-left:auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hdr-tools label{font-size:13px;color:#b8c8cf;display:flex;gap:6px;align-items:center}
+input,select,button{font:inherit}
+input[type=date],input[type=search],select{background:#fff;border:1px solid var(--line);border-radius:5px;padding:6px 8px;color:var(--ink)}
+header input[type=date]{background:rgba(255,255,255,.06);border-color:#2b4a56;color:#fff;color-scheme:dark;border-radius:8px}
+button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:5px;padding:6px 12px;color:var(--ink)}
+button:hover{border-color:var(--teal)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+header button{background:rgba(255,255,255,.06);border-color:#2b4a56;color:#d9f3ee;border-radius:99px;padding:6px 16px}
+header button:hover{border-color:#2ee6c5;box-shadow:0 0 14px -3px #2ee6c5}
+.badge{background:linear-gradient(90deg,#ffc247,#ff9d3c);color:#241703;font-weight:700;font-size:11.5px;padding:4px 12px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 0 16px -4px #ffc247}
+.range{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid #2b4a56;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.range:focus-within{border-color:#2ee6c5;box-shadow:0 0 16px -4px #2ee6c5}
+.range label{display:flex;flex-direction:column;gap:0;font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#7fd6c6;font-weight:600}
+.range input[type=date]{background:transparent;border:0;padding:1px 2px;color:#fff;font:500 14px var(--body);color-scheme:dark;min-width:118px}
+.range input[type=date]::-webkit-calendar-picker-indicator{filter:invert(78%) sepia(40%) saturate(500%) hue-rotate(115deg);cursor:pointer;opacity:.9}
+.range .arrow{font-style:normal;color:#4e8b86;margin:0 4px;align-self:flex-end;padding-bottom:3px}
+header button.ghost{background:transparent;border:1px solid #2b4a56;color:#bcd3d9;font-weight:500}
+header button.ghost:hover{color:#fff;border-color:#ff6b5a;box-shadow:0 0 14px -4px #ff6b5a}
+header button.prim{background:linear-gradient(90deg,#2ee6c5,#5aa9ff);border:0;color:#04201b;font-weight:700;padding:8px 20px;box-shadow:0 6px 18px -8px #2ee6c5}
+header button.prim:hover{filter:brightness(1.1);box-shadow:0 8px 22px -6px #2ee6c5}
+header button:active{transform:translateY(1px)}
+nav{display:flex;gap:6px;overflow-x:auto;background:#0b161c;padding:10px 28px;border-bottom:1px solid #1f3a44}
+nav button{border:1px solid transparent;border-radius:99px;background:transparent;padding:7px 18px;font-weight:500;color:#8fa7af;white-space:nowrap}
+nav button:hover{color:#fff;border-color:#24424d}
+nav button.on{color:#06231e;background:linear-gradient(90deg,#2ee6c5,#7fe8d6);font-weight:600;box-shadow:0 0 18px -4px #2ee6c5}
+main{padding:20px 24px 48px;max-width:1500px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:4px;padding:10px 14px}
+.kpi:nth-child(5n+2){border-left-color:var(--blue)} .kpi:nth-child(5n+3){border-left-color:var(--amber)}
+.kpi:nth-child(5n+4){border-left-color:var(--red)} .kpi:nth-child(5n+5){border-left-color:var(--plum)}
+.kpi span{display:block;font-size:13px;color:var(--muted)}
+.kpi b{font:700 28px/1.15 var(--head)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;margin-bottom:18px}
+.card{background:radial-gradient(500px 160px at 0% 0%,rgba(46,230,197,.10),transparent 70%),linear-gradient(165deg,#0f212a,#0b161c);border:1px solid #1f3a44;border-radius:16px;padding:16px;color:#d9e7ea;box-shadow:0 18px 40px -26px rgba(0,0,0,.7)}
+.card select{background:#0b161c;color:#d9e7ea;border-color:#24424d;border-radius:8px}
+.card .empty{color:#7f979f}
+.card h3{font:600 19px/1.2 var(--head);margin:0 0 10px;color:#eaf7f4;letter-spacing:.02em}
+.cv{position:relative;height:260px}
+.card .tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.filters{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 14px;margin-bottom:18px}
+.frow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px}
+.frow input[type=search]{min-width:260px;flex:1}
+details.grp{margin:4px 0;border-top:1px solid var(--line);padding-top:6px}
+details.grp summary{cursor:pointer;font-weight:600;font-size:14px}
+details.grp summary em{font-style:normal;color:var(--teal);font-weight:500;margin-left:6px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.pill{border:1px solid var(--c);color:var(--c);background:#fff;border-radius:99px;padding:2px 11px;font-size:13px}
+.pill.on{background:var(--c);color:#fff}
+.mp{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow:auto;margin-bottom:10px}
+.mpill{border:1px solid #2b6f66;color:#7fd6c6;background:transparent;border-radius:99px;padding:2px 11px;font-size:13px}
+.mpill.on{background:#2ee6c5;color:#04201b;border-color:#2ee6c5;box-shadow:0 0 12px -3px #2ee6c5}
+.pager{display:flex;gap:12px;align-items:center;justify-content:flex-end}
+.dt th{cursor:pointer;user-select:none;position:sticky;top:0;z-index:2;white-space:nowrap;text-align:left;padding:11px 12px}
+.dt td{white-space:nowrap}
+.tablewrap{overflow:auto}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.err{background:#fbe9e6;border:1px solid var(--red);padding:14px;border-radius:4px;margin:24px}
+h2{font:600 22px/1.2 var(--head);margin:22px 0 10px}
+
+/* ===== 2040 data stream table ===== */
+.dt{position:relative;border-radius:16px;padding:1px;background:linear-gradient(135deg,rgba(0,229,255,.55),rgba(138,92,255,.35) 45%,rgba(255,64,160,.35));box-shadow:0 10px 40px rgba(10,20,50,.35)}
+.dt>*{position:relative}
+.dt-in{background:radial-gradient(1200px 400px at 0% -10%,#16264a 0%,transparent 60%),linear-gradient(180deg,#0a1122,#0c1527);border-radius:15px;overflow:hidden;color:#dbe7f3}
+.dt-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(120,200,255,.14)}
+.dt-head b{font:600 17px/1 var(--head);letter-spacing:2px;color:#e8f6ff}
+.dt-head span.c{margin-left:auto;font:500 12px/1 ui-monospace,Menlo,Consolas,monospace;color:#7fb8d6}
+.live{width:9px;height:9px;border-radius:50%;background:#00e5ff;box-shadow:0 0 0 0 rgba(0,229,255,.7);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(0,229,255,0)}100%{box-shadow:0 0 0 0 rgba(0,229,255,0)}}
+.dt .tablewrap{background:transparent;border:0;border-radius:0;max-height:560px;scrollbar-color:#2c4a6e #0a1122;scrollbar-width:thin}
+.dt table{border-collapse:separate;border-spacing:0 3px;padding:0 10px;font-size:13.5px}
+.dt th{background:rgba(10,17,34,.88);backdrop-filter:blur(8px);color:#7fb8d6;font:600 11px/1.2 var(--body);letter-spacing:1.3px;text-transform:uppercase;border-bottom:1px solid rgba(0,229,255,.35);padding:12px 12px;top:0}
+.dt th:hover{color:#00e5ff}
+.dt th.sorted{color:#00e5ff}
+.dt td{position:relative;padding:9px 12px;border:0;background:rgba(255,255,255,.028);color:#dbe7f3}
+.dt td:first-child{border-radius:9px 0 0 9px}.dt td:last-child{border-radius:0 9px 9px 0}
+.dt tbody tr{transition:transform .15s}
+.dt tr:hover td{background:rgba(0,229,255,.09)}
+.dt tr:hover td:first-child{box-shadow:inset 3px 0 0 #00e5ff}
+.dt th:first-child,.dt td:first-child{position:sticky;left:0;z-index:2;background:#0d172b}
+.dt th:first-child{z-index:3;background:#0a1122}
+.dt tr:hover td:first-child{background:#10213a}
+.dt td.d{font:500 13px ui-monospace,Menlo,Consolas,monospace;color:#9fe9ff}
+.dt td.tm{font:500 13px ui-monospace,Menlo,Consolas,monospace;color:#b9a8ff}
+.dt td.nul{color:#33465e;text-align:center}
+.dt td.n{text-align:right;font:500 13px ui-monospace,Menlo,Consolas,monospace;min-width:84px}
+.dt td.n span{position:relative;z-index:1}
+.dt td.n.z span{color:#4b6178}
+.dt td.n .bar{position:absolute;left:6px;top:22%;bottom:22%;border-radius:3px;background:linear-gradient(90deg,rgba(0,229,255,.38),rgba(138,92,255,.08));max-width:calc(100% - 12px)}
+.chip{display:inline-flex;align-items:center;gap:7px;border-radius:99px;padding:2px 11px 2px 9px;font-size:12.5px;font-weight:500;border:1px solid color-mix(in srgb,var(--c) 70%,#fff 0%);background:color-mix(in srgb,var(--c) 22%,transparent);color:color-mix(in srgb,var(--c) 40%,#fff)}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:color-mix(in srgb,var(--c) 40%,#fff);box-shadow:0 0 8px var(--c)}
+.chip.id{font:600 12.5px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.5px;border-radius:7px}
+.dt .pager{padding:12px 18px;margin:0;border-top:1px solid rgba(120,200,255,.14);color:#7fb8d6;font:500 12px ui-monospace,Menlo,Consolas,monospace}
+.dt .pager button{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.4);color:#9fe9ff;border-radius:99px;padding:5px 16px}
+.dt .pager button:hover:not(:disabled){background:rgba(0,229,255,.2);box-shadow:0 0 14px rgba(0,229,255,.35)}
+.dt .pager button:disabled{opacity:.3;cursor:default}
+.dt .empty{color:#7fb8d6}
+@media (max-width:640px){.charts{grid-template-columns:1fr}main{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ee6c5"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient></defs>
+      <path d="M24 3 42 13.5v21L24 45 6 34.5v-21z" fill="rgba(46,230,197,.10)" stroke="url(#lg)" stroke-width="2.2"/>
+      <path d="M14 30v-6M20 30V17M26 30v-9M32 30V14" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/></svg>
+    <div><h1><span>Jaroi</span>Production Dashboard</h1><small id="sub">Loading sheet data…</small></div>
+  </div>
+  <span id="demo" class="badge" hidden>Hypothetical demo data</span>
+  <div class="hdr-tools">
+    <div class="range" role="group" aria-label="Date range">
+      <label><span>From</span><input type="date" id="dFrom"></label>
+      <i class="arrow" aria-hidden="true">→</i>
+      <label><span>To</span><input type="date" id="dTo"></label>
+    </div>
+    <button id="clearAll" class="ghost">✕ Clear filters</button>
+    <button id="refresh" class="prim">↻ Refresh data</button>
+  </div>
+</header>
+<nav id="tabs" aria-label="Sheets"></nav>
+<main id="view"><div class="empty">Loading…</div></main>
+
+<script>
+/* ============ configuration: what to show for each sheet ============ */
+Chart.defaults.color='#9fb8bf';Chart.defaults.borderColor='rgba(255,255,255,.07)';Chart.defaults.font.family="Barlow,system-ui,sans-serif";
+Chart.defaults.plugins.tooltip.backgroundColor='#06121a';Chart.defaults.plugins.tooltip.borderColor='#2ee6c5';Chart.defaults.plugins.tooltip.borderWidth=1;Chart.defaults.plugins.tooltip.padding=10;
+const COLORS=['#0e7c6b','#2f5d8c','#c98a12','#b83a2a','#6b4e7e','#7a8b94','#3d8f4f','#a0527c','#4a90a4','#8a6d3b'];
+const CUR=/cost|rate \/ hr|rate\/hr|consumables|\/ hr$/i;
+
+const CFG={
+ 'Production Log':{
+  kpis:[
+   {l:'Jobs logged',f:'count'},
+   {l:'Good qty',f:'sum',h:'Good Qty',fmt:'int'},
+   {l:'Achievement',f:'ratio',num:'Actual Qty',den:'Planned Qty',fmt:'pct'},
+   {l:'Rejection',f:'ratio',num:'Rejected Qty',den:'Actual Qty',fmt:'pct'},
+   {l:'Production cost',f:'sum',h:'Total Production Cost',fmt:'inr'},
+   {l:'Cost / good part',f:'ratio',num:'Total Production Cost',den:'Good Qty',fmt:'inr'},
+   {l:'Setup minutes',f:'sum',h:'Setup Time (Min)',fmt:'int'}],
+  charts:[
+   {t:'Daily production cost',k:'line',x:'Date',y:['Total Production Cost'],agg:'sum',fmt:'inr'},
+   {t:'Daily achievement %',k:'line',x:'Date',agg:'ratio',num:'Actual Qty',den:'Planned Qty',fmt:'pct'},
+   {t:'Production cost by machine',k:'hbar',x:'ID (Machine/Manual)',y:['Total Production Cost'],agg:'sum',fmt:'inr'},
+   {t:'Rejection % by machine',k:'bar',x:'ID (Machine/Manual)',agg:'ratio',num:'Rejected Qty',den:'Actual Qty',fmt:'pct'},
+   {t:'Good qty by product',k:'bar',x:'Product',y:['Good Qty'],agg:'sum',fmt:'int'},
+   {t:'Good qty by operator',k:'hbar',x:'Operator',y:['Good Qty'],agg:'sum',fmt:'int'}]},
+ 'Quality Log':{
+  kpis:[
+   {l:'Records',f:'count'},
+   {l:'Produced qty',f:'sum',h:'Produced Qty',fmt:'int'},
+   {l:'Rejected qty',f:'sum',h:'Rejected Qty',fmt:'int'},
+   {l:'Rework qty',f:'sum',h:'Rework Qty',fmt:'int'},
+   {l:'Reject rate',f:'ratio',num:'Rejected Qty',den:'Produced Qty',fmt:'pct'},
+   {l:'Scrap cost',f:'sum',h:'Scrap Cost',fmt:'inr'},
+   {l:'Rework cost',f:'sum',h:'Rework Cost',fmt:'inr'}],
+  charts:[
+   {t:'Loss by defect type',k:'bar',x:'Defect Type',y:['Scrap Cost','Rework Cost'],agg:'sum',stack:1,fmt:'inr'},
+   {t:'Rejected qty by defect reason',k:'hbar',x:'Defect Reason',y:['Rejected Qty'],agg:'sum',fmt:'int'},
+   {t:'Daily rejected & rework qty',k:'line',x:'Date',y:['Rejected Qty','Rework Qty'],agg:'sum',fmt:'int'},
+   {t:'Reject rate by machine',k:'bar',x:'ID (Machine/Manual)',agg:'ratio',num:'Rejected Qty',den:'Produced Qty',fmt:'pct'},
+   {t:'Loss by product',k:'hbar',x:'Product / Part',y:['Scrap Cost','Rework Cost'],agg:'sum',stack:1,fmt:'inr'}]},
+ 'Downtime Log':{
+  kpis:[
+   {l:'Stoppages',f:'count'},
+   {l:'Downtime minutes',f:'sum',h:'Duration (Min)',fmt:'int'},
+   {l:'Downtime cost',f:'sum',h:'Downtime Cost',fmt:'inr'},
+   {l:'Avg stoppage',f:'avg',h:'Duration (Min)',fmt:'min'},
+   {l:'Repeat issues',f:'countIf',h:'Repeat Issue?',eq:'Yes',fmt:'int'}],
+  charts:[
+   {t:'Downtime minutes by category',k:'bar',x:'Category',y:['Duration (Min)'],agg:'sum',fmt:'int'},
+   {t:'Downtime cost by machine',k:'hbar',x:'ID (Machine/Manual)',y:['Downtime Cost'],agg:'sum',fmt:'inr'},
+   {t:'Minutes by reason',k:'hbar',x:'Reason',y:['Duration (Min)'],agg:'sum',fmt:'int'},
+   {t:'Daily downtime minutes',k:'line',x:'Date',y:['Duration (Min)'],agg:'sum',fmt:'int'},
+   {t:'Minutes by responsible department',k:'bar',x:'Responsible Department',y:['Duration (Min)'],agg:'sum',fmt:'int'}]},
+ 'Setup Log':{
+  kpis:[
+   {l:'Changeovers',f:'count'},
+   {l:'Total changeover min',f:'sum',h:'Total Changeover (Min)',fmt:'int'},
+   {l:'Avg changeover',f:'avg',h:'Total Changeover (Min)',fmt:'min'},
+   {l:'Tool change min',f:'sum',h:'Tool Change (Min)',fmt:'int'},
+   {l:'Program change min',f:'sum',h:'Program Change (Min)',fmt:'int'}],
+  charts:[
+   {t:'Avg changeover by machine',k:'bar',x:'ID (Machine/Manual)',y:['Total Changeover (Min)'],agg:'avg',fmt:'num'},
+   {t:'Daily changeover minutes',k:'line',x:'Date',y:['Total Changeover (Min)'],agg:'sum',fmt:'int'},
+   {t:'Avg changeover by new product',k:'hbar',x:'New Product',y:['Total Changeover (Min)'],agg:'avg',fmt:'num'},
+   {t:'Where setup time goes',k:'bar',x:'ID (Machine/Manual)',y:['Tool Change (Min)','Program Change (Min)','Trial Production (Min)','Inspection (Min)'],agg:'sum',stack:1,fmt:'int'}]},
+ 'Daily Cost Summary':{
+  kpis:[
+   {l:'Days',f:'count'},
+   {l:'Total est. cost / loss',f:'sum',h:'Total Estimated Cost / Loss',fmt:'inr'},
+   {l:'Production cost',f:'sum',h:'Production Cost',fmt:'inr'},
+   {l:'Downtime cost',f:'sum',h:'Downtime Cost',fmt:'inr'},
+   {l:'Scrap + rework',f:'sum2',h:'Scrap Cost',h2:'Rework Cost',fmt:'inr'},
+   {l:'Achievement',f:'ratio',num:'Actual Qty',den:'Planned Qty',fmt:'pct'},
+   {l:'Cost / good unit',f:'ratio',num:'Total Estimated Cost / Loss',den:'Good Qty',fmt:'inr'}],
+  charts:[
+   {t:'Daily production cost vs losses',k:'combo',x:'Date',y:['Production Cost','Downtime Cost','Scrap Cost','Rework Cost'],agg:'sum',barLabel:'Production cost',lineLabel:'Losses: downtime + scrap + rework (big dot = spike)',fmt:'inr'},
+   {t:'Achievement % per day',k:'line',x:'Date',y:['Achievement %'],agg:'avg',fmt:'pct'},
+   {t:'Loss components per day',k:'bar',x:'Date',y:['Downtime Cost','Scrap Cost','Rework Cost'],agg:'sum',stack:1,fmt:'inr'},
+   {t:'Downtime vs changeover minutes',k:'line',x:'Date',y:['Downtime (Min)','Changeover (Min)'],agg:'sum',fmt:'int'},
+   {t:'Cost per good unit per day',k:'line',x:'Date',y:['Cost per Good Unit'],agg:'avg',fmt:'inr'}]},
+ 'Machine Master':{
+  kpis:[{l:'Resources',f:'count'}],
+  charts:[{t:'Hourly rates by resource',k:'bar',x:'ID (Machine/Manual)',y:['Machine / Manual/ Rate / Hr','Labour Rate / Hr','Electricity & Consumables / Hr'],agg:'sum',fmt:'inr'}]}
+};
+
+const OVERVIEW={
+ kpis:[
+  {s:'Daily Cost Summary',l:'Total est. cost / loss',f:'sum',h:'Total Estimated Cost / Loss',fmt:'inr'},
+  {s:'Daily Cost Summary',l:'Production cost',f:'sum',h:'Production Cost',fmt:'inr'},
+  {s:'Daily Cost Summary',l:'Losses (downtime, scrap, rework)',f:'sum3',hs:['Downtime Cost','Scrap Cost','Rework Cost'],fmt:'inr'},
+  {s:'Daily Cost Summary',l:'Achievement',f:'ratio',num:'Actual Qty',den:'Planned Qty',fmt:'pct'},
+  {s:'Daily Cost Summary',l:'Rejection',f:'ratio',num:'Rejected Qty',den:'Actual Qty',fmt:'pct'},
+  {s:'Daily Cost Summary',l:'Cost / good unit',f:'ratio',num:'Total Estimated Cost / Loss',den:'Good Qty',fmt:'inr'},
+  {s:'Daily Cost Summary',l:'Downtime minutes',f:'sum',h:'Downtime (Min)',fmt:'int'},
+  {s:'Daily Cost Summary',l:'Changeover minutes',f:'sum',h:'Changeover (Min)',fmt:'int'}],
+ charts:[
+  {s:'Daily Cost Summary',t:'Daily production cost vs losses',k:'combo',x:'Date',y:['Production Cost','Downtime Cost','Scrap Cost','Rework Cost'],agg:'sum',barLabel:'Production cost',lineLabel:'Losses: downtime + scrap + rework (big dot = spike)',fmt:'inr'},
+  {s:'Daily Cost Summary',t:'Achievement % per day',k:'line',x:'Date',y:['Achievement %'],agg:'avg',fmt:'pct'},
+  {s:'Production Log',t:'Production cost by machine',k:'hbar',x:'ID (Machine/Manual)',y:['Total Production Cost'],agg:'sum',fmt:'inr'},
+  {s:'Downtime Log',t:'Downtime cost by machine',k:'hbar',x:'ID (Machine/Manual)',y:['Downtime Cost'],agg:'sum',fmt:'inr'},
+  {s:'Downtime Log',t:'Downtime minutes by category',k:'bar',x:'Category',y:['Duration (Min)'],agg:'sum',fmt:'int'},
+  {s:'Quality Log',t:'Quality loss by defect type',k:'bar',x:'Defect Type',y:['Scrap Cost','Rework Cost'],agg:'sum',stack:1,fmt:'inr'}]
+};
+
+/* ============ state ============ */
+let DATA=null, S={}, charts=[], G={tab:'Overview',from:'',to:''}, ST={};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf=new Intl.NumberFormat('en-IN',{maximumFractionDigits:0});
+const nf2=new Intl.NumberFormat('en-IN',{maximumFractionDigits:2});
+
+function fmt(kind,v){
+  if(v==null||isNaN(v)) return '–';
+  switch(kind){
+   case 'inr':{const a=Math.abs(v);return a>=1e7?'₹'+(v/1e7).toFixed(2)+' Cr':a>=1e5?'₹'+(v/1e5).toFixed(2)+' L':'₹'+nf.format(v);}
+   case 'pct':return (v*100).toFixed(1)+'%';
+   case 'int':return nf.format(v);
+   case 'min':return nf2.format(v)+' min';
+   default:return nf2.format(v);}
+}
+const colFmt=(h)=>/%/.test(h)?'pct':CUR.test(h)?'inr':'num';
+const NEON=['#2ee6c5','#5aa9ff','#ffc247','#ff6b5a','#c08bff','#9fb3bd','#6be585','#ff7ac6'];
+const chipColor=(s)=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return NEON[h%NEON.length];};
+const colorFor=(s)=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return COLORS[h%COLORS.length];};
+
+/* ============ boot ============ */
+function load(){
+  $('view').innerHTML='<div class="empty">Loading sheet data…</div>';
+  google.script.run.withSuccessHandler(init).withFailureHandler(e=>{
+    $('view').innerHTML='<div class="err"><b>Could not load data.</b><br>'+esc(e.message||e)+'<br>Check that the script is deployed to run as you and that you have access to the spreadsheet.</div>';
+  }).getDashboardData();
+}
+function init(d){
+  DATA=d; S={};
+  d.sheets.forEach(sh=>{
+    sh.ix={}; sh.headers.forEach((h,i)=>sh.ix[h]=i);
+    sh.dateCol=sh.types.indexOf('date');
+    S[sh.name]=sh;
+    if(!ST[sh.name]) ST[sh.name]={f:{},q:'',page:0,sort:null,ex:null};
+  });
+  $('sub').textContent=d.sheets.length+' sheets · refreshed '+new Date(d.generatedAt).toLocaleString('en-IN');
+  $('demo').hidden=!d.sheets.some(sh=>sh.rows.some(r=>r.some(c=>typeof c==='string'&&c.indexOf('HYPOTHETICAL')===0)));
+  const dates=[];
+  d.sheets.forEach(sh=>{if(sh.dateCol>=0)sh.rows.forEach(r=>r[sh.dateCol]&&dates.push(r[sh.dateCol]));});
+  dates.sort(); if(dates.length){$('dFrom').min=$('dTo').min=dates[0];$('dFrom').max=$('dTo').max=dates[dates.length-1];}
+  if(!G.tab||(G.tab!=='Overview'&&!S[G.tab])) G.tab='Overview';
+  render();
+}
+
+/* ============ filtering & aggregation ============ */
+function rowsOf(name,useFilters){
+  const sh=S[name]; if(!sh) return [];
+  const st=ST[name], q=st.q.trim().toLowerCase();
+  return sh.rows.filter(r=>{
+    if(sh.dateCol>=0){const d=r[sh.dateCol]; if((G.from&&d<G.from)||(G.to&&d>G.to)) return false;}
+    if(!useFilters) return true;
+    for(const c in st.f){const set=st.f[c]; if(set.size&&!set.has(r[c])) return false;}
+    if(q){let hit=false;for(let c=0;c<r.length;c++){if(sh.types[c]==='string'&&r[c]&&String(r[c]).toLowerCase().indexOf(q)>-1){hit=true;break;}} if(!hit) return false;}
+    return true;
+  });
+}
+const num=(r,sh,h)=>{const i=sh.ix[h];return i==null?0:(typeof r[i]==='number'?r[i]:0);};
+
+function kpiValue(sh,rows,k){
+  switch(k.f){
+   case 'count':return rows.length;
+   case 'sum':{if(sh.ix[k.h]==null)return null;return rows.reduce((a,r)=>a+num(r,sh,k.h),0);}
+   case 'sum2':return rows.reduce((a,r)=>a+num(r,sh,k.h)+num(r,sh,k.h2),0);
+   case 'sum3':return rows.reduce((a,r)=>a+k.hs.reduce((b,h)=>b+num(r,sh,h),0),0);
+   case 'avg':{const v=rows.map(r=>r[sh.ix[k.h]]).filter(x=>typeof x==='number');return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
+   case 'countIf':return rows.filter(r=>r[sh.ix[k.h]]===k.eq).length;
+   case 'ratio':{const n=rows.reduce((a,r)=>a+num(r,sh,k.num),0),d=rows.reduce((a,r)=>a+num(r,sh,k.den),0);return d?n/d:null;}}
+}
+function renderKpis(list,cur){
+  return '<div class="kpis">'+list.map(k=>{
+    const name=k.s||cur; if(!S[name]) return '';
+    const sh=S[name]; const v=kpiValue(sh,rowsOf(name,!k.s),k);
+    return '<div class="kpi"><span>'+esc(k.l)+'</span><b>'+fmt(k.fmt||'int',v)+'</b></div>';
+  }).join('')+'</div>';
+}
+
+function aggregate(sh,rows,sp){
+  const xi=sh.ix[sp.x]; if(xi==null) return null;
+  const ys=sp.agg==='ratio'?[null]:sp.y; if(ys&&sp.agg!=='ratio'&&ys.some(h=>sh.ix[h]==null)) return null;
+  if(sp.agg==='ratio'&&(sh.ix[sp.num]==null||sh.ix[sp.den]==null)) return null;
+  const m=new Map();
+  rows.forEach(r=>{
+    const key=r[xi]; if(key==null) return;
+    let a=m.get(key); if(!a){a={n:0,s:ys.map(()=>0),c:ys.map(()=>0),nu:0,de:0};m.set(key,a);}
+    a.n++;
+    if(sp.agg==='ratio'){a.nu+=num(r,sh,sp.num);a.de+=num(r,sh,sp.den);}
+    else ys.forEach((h,j)=>{const v=r[sh.ix[h]];if(typeof v==='number'){a.s[j]+=v;a.c[j]++;}});
+  });
+  const val=(a,j)=>sp.agg==='ratio'?(a.de?a.nu/a.de:0):sp.agg==='count'?a.n:sp.agg==='avg'?(a.c[j]?a.s[j]/a.c[j]:0):a.s[j];
+  let keys=[...m.keys()];
+  const isDate=sh.types[xi]==='date';
+  if(isDate) keys.sort(); else{keys.sort((a,b)=>val(m.get(b),0)-val(m.get(a),0)); keys=keys.slice(0,30);}
+  const names=sp.agg==='ratio'?[sp.t]:sp.y;
+  return {labels:keys.map(k=>isDate?k.slice(5):k),full:keys,series:names.map((nm,j)=>({label:nm,data:keys.map(k=>val(m.get(k),j))}))};
+}
+
+function drawCombo(canvas,ag,sp){
+  const bars=ag.series[0].data;
+  const loss=ag.labels.map((_,i)=>ag.series.slice(1).reduce((t,x)=>t+x.data[i],0));
+  const mean=loss.reduce((x,y)=>x+y,0)/loss.length, hot=loss.map(v=>v>mean*1.3);
+  const g=canvas.getContext('2d').createLinearGradient(0,0,0,260);
+  g.addColorStop(0,'rgba(46,230,197,.75)');g.addColorStop(1,'rgba(46,230,197,.10)');
+  charts.push(new Chart(canvas,{data:{labels:ag.labels,datasets:[
+    {type:'bar',label:sp.barLabel,data:bars,backgroundColor:g,borderColor:'#2ee6c5',borderWidth:{top:2,right:0,bottom:0,left:0},borderRadius:4,yAxisID:'y',order:2},
+    {type:'line',label:sp.lineLabel,data:loss,borderColor:'#ff6b5a',backgroundColor:'#ff6b5a',borderWidth:2.5,tension:.3,
+     pointRadius:hot.map(h=>h?6:2.5),pointBackgroundColor:hot.map(h=>h?'#ff6b5a':'#0b161c'),pointBorderColor:'#ff6b5a',pointBorderWidth:2,yAxisID:'y1',order:1}]},
+   options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}},tooltip:{callbacks:{
+      title:i=>ag.full[i[0].dataIndex],
+      label:c=>c.dataset.label.split(':')[0]+': '+fmt('inr',c.parsed.y),
+      footer:it=>{const i=it[0].dataIndex,t=bars[i]+loss[i];return 'Loss share: '+(t?(loss[i]/t*100).toFixed(1):'0')+'% of total cost';}}}},
+    scales:{y:{beginAtZero:true,ticks:{callback:v=>fmt('inr',v)}},
+      y1:{position:'right',beginAtZero:true,grid:{drawOnChartArea:false},ticks:{color:'#ff9a8c',callback:v=>fmt('inr',v)}},
+      x:{grid:{display:false},ticks:{maxRotation:60,autoSkip:true}}}}}));
+}
+function drawChart(canvas,sh,rows,sp){
+  const ag=aggregate(sh,rows,sp);
+  if(!ag||!ag.labels.length){canvas.parentNode.innerHTML='<div class="empty">No data for the current filters</div>';return;}
+  if(sp.k==='combo') return drawCombo(canvas,ag,sp);
+  const hb=sp.k==='hbar', line=sp.k==='line', multi=ag.series.length>1;
+  const ds=ag.series.map((s,i)=>({
+    label:s.label,data:s.data,
+    backgroundColor:line?NEON[i%COLORS.length]:(multi?NEON[i%COLORS.length]:NEON[0]),
+    borderColor:NEON[i%COLORS.length],borderWidth:line?2:0,tension:.25,pointRadius:line?2.5:0,fill:false
+  }));
+  const f=sp.fmt||'num';
+  if(hb) canvas.parentNode.style.height=Math.max(260,ag.labels.length*24+70)+'px';
+  const ch=new Chart(canvas,{type:line?'line':'bar',data:{labels:ag.labels,datasets:ds},options:{
+    indexAxis:hb?'y':'x',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:multi,position:'bottom'},tooltip:{callbacks:{
+      title:i=>ag.full[i[0].dataIndex],
+      label:c=>c.dataset.label+': '+fmt(f,hb?c.parsed.x:c.parsed.y)}}},
+    scales:{
+      [hb?'x':'y']:{stacked:!!sp.stack,beginAtZero:true,ticks:{callback:v=>fmt(f,v).replace(/\.00? /,' ')}},
+      [hb?'y':'x']:{stacked:!!sp.stack,ticks:{maxRotation:60,autoSkip:true}}}}});
+  charts.push(ch);
+}
+
+/* ============ views ============ */
+function render(){
+  charts.forEach(c=>c.destroy()); charts=[];
+  $('tabs').innerHTML=['Overview'].concat(DATA.sheets.map(s=>s.name)).map(n=>'<button data-t="'+esc(n)+'" class="'+(n===G.tab?'on':'')+'">'+esc(n)+'</button>').join('');
+  $('dFrom').value=G.from; $('dTo').value=G.to;
+  if(G.tab==='Overview') viewOverview(); else viewSheet(G.tab);
+}
+
+function chartCards(specs,cur){
+  return '<div class="charts">'+specs.map((sp,i)=>S[sp.s||cur]&&S[sp.s||cur].ix[sp.x]!=null?'<div class="card"><h3>'+esc(sp.t)+'</h3><div class="cv"><canvas data-i="'+i+'"></canvas></div></div>':'').join('')+'</div>';
+}
+function paintCharts(specs,cur,useFilters){
+  document.querySelectorAll('canvas[data-i]').forEach(cv=>{
+    const sp=specs[+cv.dataset.i], name=sp.s||cur;
+    drawChart(cv,S[name],rowsOf(name,useFilters&&!sp.s),sp);
+  });
+}
+
+function viewOverview(){
+  $('view').innerHTML=renderKpis(OVERVIEW.kpis,'')+chartCards(OVERVIEW.charts,'')+
+   '<p style="color:var(--muted)">The date range above applies to every sheet. Open a sheet tab for filters, search and the full table.</p>';
+  paintCharts(OVERVIEW.charts,'',false);
+}
+
+function viewSheet(name){
+  const sh=S[name], st=ST[name], cfg=CFG[name]||{kpis:[{l:'Rows',f:'count'}],charts:[]};
+  const catCols=sh.headers.map((h,i)=>i).filter(i=>sh.cat[i]);
+  const filtGroups=catCols.map(i=>{
+    const vals=[...new Set(sh.rows.map(r=>r[i]).filter(v=>v!=null))].sort();
+    const sel=st.f[i]||new Set();
+    return '<details class="grp"'+(sel.size?' open':'')+'><summary>'+esc(sh.headers[i])+(sel.size?'<em>'+sel.size+' selected</em>':'')+'</summary><div class="pills">'+
+      vals.map(v=>'<button class="pill'+(sel.has(v)?' on':'')+'" style="--c:'+colorFor(v)+'" data-c="'+i+'" data-v="'+esc(v)+'">'+esc(v)+'</button>').join('')+'</div></details>';
+  }).join('');
+
+  const numCols=sh.headers.filter((h,i)=>sh.types[i]==='number');
+  const exX=sh.headers.filter((h,i)=>sh.types[i]==='date'||sh.cat[i]);
+  if(!st.ex) st.ex={x:exX[0],y:[numCols[0]],agg:'sum'};
+  const explore=numCols.length&&exX.length?
+   '<div class="card" style="margin-bottom:18px"><h3>Explore numeric columns (pick one or several to compare)</h3>'+
+   '<div class="mp">'+numCols.map(h=>'<button class="mpill'+(st.ex.y.indexOf(h)>-1?' on':'')+'" data-m="'+esc(h)+'">'+esc(h)+'</button>').join('')+'</div><div class="tools">'+
+   '<select id="exAgg">'+['sum','avg','count'].map(a=>'<option'+(a===st.ex.agg?' selected':'')+'>'+a+'</option>').join('')+'</select>'+
+   '<span style="align-self:center">by</span>'+
+   '<select id="exX">'+exX.map(h=>'<option'+(h===st.ex.x?' selected':'')+'>'+esc(h)+'</option>').join('')+'</select></div>'+
+   '<div class="cv"><canvas id="exC"></canvas></div></div>':'';
+
+  $('view').innerHTML=renderKpis(cfg.kpis,name)+
+   '<div class="filters"><div class="frow"><input type="search" id="q" placeholder="Search text columns…" value="'+esc(st.q)+'"><span id="cnt"></span></div>'+
+   (filtGroups||'<span style="color:var(--muted)">No category columns on this sheet.</span>')+'</div>'+
+   chartCards(cfg.charts,name)+explore+
+   '<h2>Data</h2><div class="dt"><div class="dt-in"><div class="dt-head"><span class="live"></span><b id="dtn"></b><span class="c" id="dtc"></span></div><div class="tablewrap" id="tw"></div><div class="pager" id="pg"></div></div></div>';
+  paintCharts(cfg.charts,name,true);
+  paintExplore(name);
+  paintTable(name);
+}
+
+function paintExplore(name){
+  const cv=$('exC'); if(!cv) return;
+  const sh=S[name], e=ST[name].ex;
+  const fs=[...new Set(e.y.map(colFmt))];
+  const sp={t:e.y.join(' / '),k:sh.types[sh.ix[e.x]]==='date'?'line':'bar',x:e.x,y:e.y,agg:e.agg,fmt:e.agg==='count'?'int':(fs.length===1?fs[0]:'num')};
+  drawChart(cv,sh,rowsOf(name,true),sp);
+}
+
+function cellHtml(sh,i,v,mx){
+  if(v==null) return '<td class="nul">·</td>';
+  const t=sh.types[i], h=sh.headers[i];
+  if(t==='number'){
+    const k=colFmt(h), txt=k==='pct'?fmt('pct',v):k==='inr'?'₹'+nf2.format(v):nf2.format(v);
+    const w=mx[i]?Math.max(0,v)/mx[i]*100:0;
+    return '<td class="n'+(v===0?' z':'')+'"><i class="bar" style="width:'+w.toFixed(0)+'%"></i><span>'+txt+'</span></td>';}
+  if(t==='date') return '<td class="d">'+esc(v)+'</td>';
+  if(t==='time') return '<td class="tm">'+esc(v)+'</td>';
+  if(sh.cat[i]) return '<td><span class="chip'+(/^ID \(/.test(h)?' id':'')+'" style="--c:'+colorFor(v)+'">'+esc(v)+'</span></td>';
+  return '<td>'+esc(v)+'</td>';
+}
+function paintTable(name){
+  const sh=S[name], st=ST[name]; let rows=rowsOf(name,true);
+  $('cnt').textContent=rows.length+' of '+sh.rows.length+' rows';
+  $('dtn').textContent=name.toUpperCase(); $('dtc').textContent=rows.length+' RECORDS · '+sh.headers.length+' FIELDS';
+  if(st.sort){const {c,d}=st.sort;rows=rows.slice().sort((a,b)=>{const x=a[c],y=b[c];if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*d;});}
+  const per=50, pages=Math.max(1,Math.ceil(rows.length/per)); if(st.page>=pages) st.page=pages-1;
+  const slice=rows.slice(st.page*per,st.page*per+per);
+  if(!rows.length){$('tw').innerHTML='<div class="empty">No rows match. Clear a filter or widen the date range.</div>';$('pg').innerHTML='';return;}
+  const mx=sh.headers.map((h,i)=>sh.types[i]==='number'?rows.reduce((a,r)=>Math.max(a,typeof r[i]==='number'?r[i]:0),0):0);
+  $('tw').innerHTML='<table><thead><tr>'+sh.headers.map((h,i)=>{const on=st.sort&&st.sort.c===i;return '<th data-s="'+i+'"'+(on?' class="sorted"':'')+'>'+esc(h)+(on?(st.sort.d>0?' ▲':' ▼'):'')+'</th>';}).join('')+'</tr></thead><tbody>'+
+   slice.map(r=>'<tr>'+r.map((v,i)=>{
+     if(v==null) return '<td class="nul">·</td>';
+     const h=sh.headers[i], t=sh.types[i];
+     if(t==='number'){const k=colFmt(h);const txt=k==='pct'?fmt('pct',v):k==='inr'?'₹'+nf2.format(v):nf2.format(v);
+       const w=mx[i]?Math.min(100,Math.abs(v)/mx[i]*100):0;
+       return '<td class="n'+(v===0?' z':'')+'"><span class="bar" style="width:'+w.toFixed(1)+'%"></span><span>'+txt+'</span></td>';}
+     if(t==='date') return '<td class="d">'+esc(v)+'</td>';
+     if(t==='time') return '<td class="tm">'+esc(v)+'</td>';
+     if(t==='string'&&sh.cat[i]) return '<td><span class="chip'+(/^ID \(/.test(h)?' id':'')+'" style="--c:'+chipColor(v)+'">'+esc(v)+'</span></td>';
+     return '<td>'+esc(v)+'</td>';}).join('')+'</tr>').join('')+'</tbody></table>';
+  $('pg').innerHTML='<button id="prev"'+(st.page?'':' disabled')+'>◀ Prev</button>  PAGE '+(st.page+1)+' / '+pages+'  <button id="next"'+(st.page<pages-1?'':' disabled')+'>Next ▶</button>';
+}
+
+/* ============ events ============ */
+document.addEventListener('click',e=>{
+  const t=e.target;
+  if(t.dataset.t){G.tab=t.dataset.t;render();return;}
+  if(t.classList.contains('mpill')){
+    const ex=ST[G.tab].ex,h=t.dataset.m,i=ex.y.indexOf(h);
+    if(i>-1){if(ex.y.length>1)ex.y.splice(i,1);}else ex.y.push(h);
+    t.classList.toggle('on',ex.y.indexOf(h)>-1);
+    charts=charts.filter(c=>{if(c.canvas.id==='exC'){c.destroy();return false;}return true;});
+    paintExplore(G.tab);return;}
+  if(t.classList.contains('pill')){
+    const st=ST[G.tab],c=+t.dataset.c,v=t.dataset.v; if(!st.f[c]) st.f[c]=new Set();
+    st.f[c].has(v)?st.f[c].delete(v):st.f[c].add(v); st.page=0;
+    const open=[...document.querySelectorAll('details.grp[open] summary')].map(s=>s.firstChild.textContent);
+    render(); document.querySelectorAll('details.grp').forEach(d=>{if(open.indexOf(d.querySelector('summary').firstChild.textContent)>-1)d.open=true;});return;}
+  if(t.dataset.s!=null){const st=ST[G.tab],c=+t.dataset.s;st.sort=st.sort&&st.sort.c===c?{c,d:-st.sort.d}:{c,d:1};paintTable(G.tab);return;}
+  if(t.id==='prev'){ST[G.tab].page--;paintTable(G.tab);}
+  if(t.id==='next'){ST[G.tab].page++;paintTable(G.tab);}
+  if(t.id==='clearAll'){G.from=G.to='';Object.keys(ST).forEach(k=>{ST[k].f={};ST[k].q='';ST[k].page=0;ST[k].sort=null;});render();}
+  if(t.id==='refresh'){load();}
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='q'){const st=ST[G.tab];st.q=t.value;st.page=0;
+    charts.forEach(c=>c.destroy());charts=[];
+    const cfg=CFG[G.tab]||{charts:[]};paintCharts(cfg.charts,G.tab,true);paintExplore(G.tab);paintTable(G.tab);}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='dFrom'||t.id==='dTo'){G[t.id==='dFrom'?'from':'to']=t.value;render();}
+  if(t.id==='exX'||t.id==='exAgg'){const ex=ST[G.tab].ex;ex[t.id==='exX'?'x':'agg']=t.value;
+    charts=charts.filter(c=>{if(c.canvas.id==='exC'){c.destroy();return false;}return true;});paintExplore(G.tab);}
+});
+load();
+</script>
+</body>
+</html>
