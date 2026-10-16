@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jaroi | PO Tracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#070e13;--panel:#0f1d25;--line:#1f3a44;--ink:#dbe7f3;--muted:#8fa7af;--field:#0b161c;--navbg:#0b161c;--card-a:#0f212a;--card-b:#0b161c;--acc:#7fd6c6;--shadow:rgba(0,0,0,.7);--teal:#2ee6c5;--blue:#5aa9ff;--amber:#ffc247;--red:#ff6b5a;--plum:#c08bff;--head:'Barlow Condensed','Arial Narrow',sans-serif;--body:'Barlow',system-ui,sans-serif}
+[data-theme="light"]{color-scheme:light;--bg:#eceff1;--panel:#fff;--line:#d3dadf;--ink:#17262e;--muted:#5f7079;--field:#fff;--navbg:#dde3e6;--card-a:#fff;--card-b:#f2f7f8;--acc:#0e7c6b;--teal:#0e7c6b;--blue:#2f5d8c;--amber:#c98a12;--red:#b83a2a;--plum:#6b4e7e;--shadow:rgba(30,60,90,.35)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--body)}
+header{position:relative;overflow:hidden;color:#fff;padding:18px 26px;display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;background:radial-gradient(700px 220px at 0% 0%,rgba(46,230,197,.28),transparent 65%),radial-gradient(600px 200px at 100% 100%,rgba(90,169,255,.22),transparent 65%),#0b161c;border-bottom:1px solid #1f3a44}
+header:after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#2ee6c5 30%,#5aa9ff 70%,transparent)}
+.brand{display:flex;align-items:center;gap:14px}.mark{width:46px;height:46px;flex:none}h1{font:700 31px/1.05 var(--head);margin:0;text-transform:uppercase;background:linear-gradient(95deg,#fff,#aef5e8 55%,#8fc4ff);-webkit-background-clip:text;background-clip:text;color:transparent}h1 span{display:block;font-size:.6em;letter-spacing:.22em;color:#7fd6c6;-webkit-text-fill-color:#7fd6c6}
+.tools{margin-left:auto;display:flex;gap:9px;align-items:center;flex-wrap:wrap}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:var(--field);border-radius:7px;padding:7px 12px;color:var(--ink)}button:hover{border-color:var(--teal)}.prim{background:linear-gradient(90deg,#2ee6c5,#5aa9ff);border:0;color:#04201b;font-weight:700}.ghost{background:transparent;border-radius:99px;color:#bcd3d9}
+main{padding:20px 24px 48px;max-width:1600px;margin:auto}.filters{border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:18px;background:linear-gradient(165deg,var(--card-a),var(--card-b));box-shadow:0 18px 40px -26px var(--shadow)}.frow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:9px}.frow input[type=search],select{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--ink)}.frow input[type=search]{min-width:230px;flex:1}.sub{color:var(--muted);font-size:12.5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}.kpi{--kc:var(--teal);position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;padding:13px 16px;background:linear-gradient(165deg,var(--card-a),var(--card-b));box-shadow:0 14px 30px -24px var(--shadow);min-width:0}.kpi:before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--kc),transparent 85%)}.kpi:nth-child(5n+2){--kc:var(--blue)}.kpi:nth-child(5n+3){--kc:var(--amber)}.kpi:nth-child(5n+4){--kc:var(--red)}.kpi span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}.kpi b{display:block;margin-top:3px;font:700 26px/1.2 var(--head);overflow-wrap:anywhere}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:12px;overflow-x:auto;padding-bottom:10px;margin-bottom:18px}.bcol{display:flex;flex-direction:column;min-height:140px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(165deg,var(--card-a),var(--card-b))}.bh{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}.bh b{font:600 15px var(--head);letter-spacing:.07em;text-transform:uppercase}.bh em{font-style:normal;min-width:24px;text-align:center;padding:1px 9px;border-radius:99px;background:rgba(46,230,197,.18);color:var(--acc);font-weight:600}.bl{display:flex;flex-direction:column;gap:8px;padding:8px;max-height:460px;overflow:auto}.bnone,.empty{color:var(--muted);font-size:13px;text-align:center;padding:28px 10px}.pcard{display:block;width:100%;text-align:left;padding:9px 11px;border-radius:11px;border:1px solid var(--line);border-left:3px solid var(--teal);background:var(--field);color:var(--ink)}.pcard.stall{border-left-color:var(--amber)}.pcard:hover,.pcard.sel{border-color:var(--teal);box-shadow:0 0 16px -6px var(--teal)}.pt{display:flex;justify-content:space-between;align-items:center;gap:8px}.pt b{font:600 13px ui-monospace,Menlo,Consolas,monospace}.pp{font-size:13px;margin-top:5px}.pm{font-size:12px;color:var(--muted);margin-top:2px}.pbar{height:4px;margin-top:8px;border-radius:99px;overflow:hidden;background:rgba(127,214,198,.15)}.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--blue))}
+.dt{position:relative;border-radius:16px;padding:1px;background:linear-gradient(135deg,rgba(0,229,255,.55),rgba(138,92,255,.35) 45%,rgba(255,64,160,.35));box-shadow:0 10px 40px rgba(10,20,50,.35)}.dt-in{background:radial-gradient(1200px 400px at 0% -10%,#16264a 0%,transparent 60%),linear-gradient(180deg,#0a1122,#0c1527);border-radius:15px;overflow:hidden;color:#dbe7f3}.dt-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(120,200,255,.14)}.dt-head b{font:600 17px/1 var(--head);letter-spacing:2px;color:#e8f6ff}.dt-head .count{margin-left:auto;color:#7fb8d6;font:500 12px ui-monospace,monospace}.live{width:9px;height:9px;border-radius:50%;background:#00e5ff;box-shadow:0 0 10px #00e5ff}.tablewrap{overflow:auto;max-height:560px}.dt table{width:100%;border-collapse:separate;border-spacing:0 3px;padding:0 10px;font-size:13px}.dt th{position:sticky;top:0;z-index:2;background:#0a1122;color:#7fb8d6;font:600 11px/1.2 var(--body);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid rgba(0,229,255,.35);padding:12px;white-space:nowrap;text-align:left}.dt td{padding:9px 12px;background:rgba(255,255,255,.028);color:#dbe7f3;white-space:nowrap}.dt td:first-child{border-radius:8px 0 0 8px}.dt td:last-child{border-radius:0 8px 8px 0}.dt tbody tr:hover td{background:rgba(0,229,255,.09)}.dt td.d,.dt td.n{font:500 12px ui-monospace,Menlo,Consolas,monospace}.dt td.n{text-align:right}.chip{display:inline-flex;align-items:center;gap:7px;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:500;border:1px solid color-mix(in srgb,var(--c) 70%,transparent);background:color-mix(in srgb,var(--c) 22%,transparent);color:#dbe7f3}.chip.id{font:600 12px ui-monospace,monospace;border-radius:7px}.steps{display:flex;flex-wrap:wrap;gap:8px 0}.stp{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px;flex:1}.stp i{position:relative;z-index:1;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--field);display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#04201b}.stp.done i{background:var(--teal);border-color:var(--teal)}.stp.cur i{background:var(--amber);border-color:var(--amber)}.stp span{font-size:12px;font-weight:600;text-align:center}.stp small{font-size:11px;color:var(--muted);text-align:center}.steps.mini{flex-wrap:nowrap;gap:0}.steps.mini .stp{min-width:0;flex:none;margin-right:6px}.steps.mini .stp i{width:11px;height:11px;border-width:1.5px}
+.sbadge{display:inline-block;padding:2px 10px;border-radius:99px;font:600 12px var(--body);vertical-align:middle}.sbadge.act{background:rgba(46,230,197,.2);color:var(--teal);border:1px solid var(--teal)}.sbadge.stl{background:rgba(255,194,71,.2);color:var(--amber);border:1px solid var(--amber)}.pdet{margin-top:16px}.pdet .card{background:linear-gradient(165deg,var(--card-a),var(--card-b));border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}.pdet h3{font:600 19px var(--head);margin:0 0 10px}
+#app[hidden]{display:none!important}
+@media(max-width:760px){main{padding:14px}.board{grid-auto-columns:minmax(230px,85vw)}header{padding:16px}.tools{margin-left:0}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ee6c5"/><stop offset="1" stop-color="#5aa9ff"/></linearGradient></defs><path d="M24 3 42 13.5v21L24 45 6 34.5v-21z" fill="rgba(46,230,197,.10)" stroke="url(#lg)" stroke-width="2.2"/><path d="M14 30v-6M20 30V17M26 30v-9M32 30V14" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/></svg>
+    <div><h1><span>Jaroi</span>PO Tracking</h1></div>
+  </div>
+  <div class="tools"><span class="sub">Department PO Tracking</span><button id="themeBtn" class="ghost">☀ Light</button><button id="refreshBtn" class="prim">↻ Refresh</button></div>
+</header>
+<main>
+  <div id="summary"></div>
+  <div class="filters"><div class="frow">
+    <input id="search" type="search" placeholder="Find a PO number, product or machine…">
+    <select id="productFilter"><option value="">All products</option></select>
+    <select id="stageFilter"><option value="">Any current stage</option></select>
+    <select id="machineFilter"><option value="">Any machine</option></select>
+    <select id="statusFilter"><option value="">Active + stalled</option><option>Active</option><option>Stalled</option></select>
+    <button id="viewBoard" class="prim">▦ Board</button><button id="viewList">☰ List</button><button id="resetBtn" class="ghost">✕ Reset</button>
+  </div><div class="sub" id="periodNote"></div></div>
+  <div id="body"><div class="empty">Loading PO tracking…</div></div>
+  <div id="detail"></div>
+</main>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf=new Intl.NumberFormat('en-IN',{maximumFractionDigits:0});
+const STALL_DAYS=3;
+const STAGES=[
+ {n:'Cutting',re:/cut|nest|saw/i},
+ {n:'Edge Banding',re:/\beb\b|edge/i},
+ {n:'Boring / Drilling',re:/bor|drill|tap/i},
+ {n:'Pasting',re:/past|press/i},
+ {n:'Carpentry',re:/carp|fitting|shutter|alm/i},
+ {n:'Painting',re:/paint|polish/i},
+ {n:'Packing',re:/pack|material|shifting/i}
+];
+const OTHER='Other';
+let DATA=null, POS=[], FLOW=STAGES.map(s=>s.n), state={q:'',product:'',stage:'',machine:'',status:'',view:'board',open:null,from:'',to:''};
+const colorFor=s=>{const palette=['#2ee6c5','#5aa9ff','#ffc247','#ff6b5a','#c08bff','#9fb3bd','#6be585','#ff7ac6'];let h=0;for(const c of String(s||''))h=(h*31+c.charCodeAt(0))>>>0;return palette[h%palette.length]};
+const poDate=iso=>{if(!iso)return '–';const p=String(iso).split('-');return (+p[2])+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+p[1]-1]};
+function stageOf(e){const a=String(e.work||'');for(const s of STAGES)if(s.re.test(a))return s.n;const b=String(e.process||'')+' '+String(e.machineName||'');for(const s of STAGES)if(s.re.test(b))return s.n;return OTHER}
+function buildPO(entries){
+ const ents=entries.map(e=>({...e,stage:stageOf(e),mach:e.machineId||'–',prod:e.product||''})).filter(e=>e.po&&e.date&&( !state.to||e.date<=state.to));
+ ents.sort((a,b)=>a.date.localeCompare(b.date)||String(a.startTime).localeCompare(String(b.startTime)));
+ if(!ents.length){FLOW=STAGES.map(s=>s.n);POS=[];return}
+ const ref=ents[ents.length-1].date, map=new Map();
+ ents.forEach(e=>{let p=map.get(e.po);if(!p){p={po:e.po,ents:[],stages:{},good:0,rejected:0,rework:0,first:e.date};map.set(e.po,p)}
+ p.ents.push(e);p.good+=e.good||0;p.rejected+=e.rejected||0;p.rework+=e.rework||0;
+ let s=p.stages[e.stage]||(p.stages[e.stage]={machines:new Set(),good:0,first:e.date,last:e.date});s.machines.add(e.mach);s.good+=e.good||0;s.last=e.date;
+ });
+ FLOW=STAGES.map(s=>s.n);if(ents.some(e=>e.stage===OTHER))FLOW.push(OTHER);
+ POS=[...map.values()];
+ POS.forEach(p=>{const c=p.ents[p.ents.length-1];p.stage=c.stage;p.machine=c.mach;p.last=c.date;p.product=c.prod;p.operator=c.operator;p.idle=Math.max(0,Math.round((Date.parse(ref)-Date.parse(p.last))/864e5));p.far=Math.max(...Object.keys(p.stages).map(n=>FLOW.indexOf(n)));p.machines=[...new Set(p.ents.map(e=>e.mach))]});
+}
+function filtered(){const q=state.q.trim().toLowerCase();return POS.filter(p=>(!q||[p.po,p.product,p.machine,...p.machines].some(v=>String(v||'').toLowerCase().includes(q)))&&(!state.product||p.product===state.product)&&(!state.stage||p.stage===state.stage)&&(!state.machine||p.machines.includes(state.machine))&&(!state.status||(state.status==='Active')===(p.idle<=STALL_DAYS))).sort((a,b)=>a.idle-b.idle||a.po.localeCompare(b.po))}
+function badge(p){return p.idle<=STALL_DAYS?'<span class="sbadge act">Active</span>':'<span class="sbadge stl">Stalled · '+p.idle+' d</span>'}
+function stepper(p,mini){return '<div class="steps'+(mini?' mini':'')+'">'+FLOW.map(n=>{const s=p.stages[n],cur=p.stage===n,cls=cur?'cur':s?'done':'';const tip=s?n+' · '+[...s.machines].join(', ')+' · '+poDate(s.first)+(s.first!==s.last?' → '+poDate(s.last):'')+' · good '+s.good:n+' · not reached yet';return '<div class="stp '+cls+'" title="'+esc(tip)+'"><i>'+(s&&!cur?'✓':'')+'</i>'+(mini?'':'<span>'+esc(n)+'</span><small>'+(s?esc([...s.machines].join(', ')):'–')+'</small>')+'</div>'}).join('')+'</div>'}
+function setOptions(id,values,all){const el=$(id),cur=el.value;el.innerHTML='<option value="">'+all+'</option>'+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');if(values.includes(cur))el.value=cur}
+function render(){
+ const list=filtered(), active=list.filter(p=>p.idle<=STALL_DAYS).length,by={};list.forEach(p=>by[p.stage]=(by[p.stage]||0)+1);const top=Object.keys(by).sort((a,b)=>by[b]-by[a])[0];
+ const k=(label,value)=>'<div class="kpi"><span>'+label+'</span><b>'+value+'</b></div>';
+ $('summary').innerHTML='<div class="kpis">'+k('POs tracked',list.length+(list.length!==POS.length?' / '+POS.length:''))+k('Active (≤'+STALL_DAYS+' days)',active)+k('Stalled',list.length-active)+k('Busiest stage',top?esc(top)+' · '+by[top]:'–')+k('Avg stage reached',list.length?(list.reduce((a,p)=>a+p.far+1,0)/list.length).toFixed(1)+' / '+FLOW.length:'–')+'</div>';
+ $('viewBoard').className=state.view==='board'?'prim':'';$('viewList').className=state.view==='list'?'prim':'';
+ let html='';
+ if(!list.length)html='<div class="empty">No purchase orders match these filters.</div>';
+ else if(state.view==='board'){html='<div class="board">'+FLOW.map(n=>{const L=list.filter(p=>p.stage===n);return '<div class="bcol"><div class="bh"><b>'+esc(n)+'</b><em>'+L.length+'</em></div><div class="bl">'+(L.map(p=>'<button class="pcard'+(p.idle>STALL_DAYS?' stall':'')+(state.open===p.po?' sel':'')+'" data-po="'+esc(p.po)+'"><div class="pt"><b>#'+esc(p.po)+'</b><span class="chip id" style="--c:'+colorFor(p.machine)+'">'+esc(p.machine)+'</span></div><div class="pp">'+esc(p.product)+'</div><div class="pm">'+poDate(p.last)+' · '+(p.idle?p.idle+' d ago':'latest day')+'</div><div class="pbar"><i style="width:'+((p.far+1)/FLOW.length*100).toFixed(0)+'%"></i></div></button>').join('')||'<div class="bnone">No POs here</div>')+'</div></div>'}).join('')+'</div>'}
+ else{html='<div class="dt"><div class="dt-in"><div class="dt-head"><span class="live"></span><b>PO TRACKER</b><span class="count">'+list.length+' POs</span></div><div class="tablewrap"><table><thead><tr>'+['PO No','Product','Current stage','Machine','Last activity','Idle','Journey','Good','Rejected','Status'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+list.map(p=>'<tr data-po="'+esc(p.po)+'" style="cursor:pointer"><td class="d">#'+esc(p.po)+'</td><td>'+esc(p.product)+'</td><td><span class="chip" style="--c:'+colorFor(p.stage)+'">'+esc(p.stage)+'</span></td><td><span class="chip id" style="--c:'+colorFor(p.machine)+'">'+esc(p.machine)+'</span></td><td class="d">'+poDate(p.last)+'</td><td class="n">'+p.idle+' d</td><td>'+stepper(p,true)+'</td><td class="n">'+nf.format(p.good)+'</td><td class="n">'+nf.format(p.rejected)+'</td><td>'+badge(p)+'</td></tr>').join('')+'</tbody></table></div></div></div>'}
+ $('body').innerHTML=html;
+ const p=state.open&&POS.find(x=>x.po===state.open);$('detail').innerHTML=p?detail(p):'';
+}
+function detail(p){
+ const rows=p.ents.slice().reverse().map(e=>'<tr><td class="d">'+esc(e.date)+'</td><td>'+esc(e.shift)+'</td><td><span class="chip id" style="--c:'+colorFor(e.mach)+'">'+esc(e.mach)+'</span></td><td><span class="chip" style="--c:'+colorFor(e.stage)+'">'+esc(e.stage)+'</span></td><td>'+esc(e.operator)+'</td><td>'+esc(e.job)+'</td><td class="n">'+nf.format(e.planned)+'</td><td class="n">'+nf.format(e.actual)+'</td><td class="n">'+nf.format(e.good)+'</td><td class="n">'+nf.format(e.rejected)+'</td><td class="n">'+nf.format(e.rework)+'</td><td>'+esc(e.startTime)+(e.endTime?' – '+esc(e.endTime):'')+'</td></tr>').join('');
+ return '<div class="pdet"><div class="card"><h3>PO #'+esc(p.po)+' · '+esc(p.product)+' &nbsp;'+badge(p)+'</h3><div class="sub" style="margin-bottom:14px">Current stage: <b>'+esc(p.stage)+'</b> · machine: <b>'+esc(p.machine)+'</b> · first seen '+poDate(p.first)+' · last entry '+poDate(p.last)+' · machines: '+esc(p.machines.join(', '))+' · good '+nf.format(p.good)+' · rejected '+nf.format(p.rejected)+' · rework '+nf.format(p.rework)+'</div>'+stepper(p,false)+'</div><div class="dt"><div class="dt-in"><div class="dt-head"><span class="live"></span><b>PO #'+esc(p.po)+' — HISTORY</b><span class="count">'+p.ents.length+' ENTRIES</span></div><div class="tablewrap"><table><thead><tr>'+['Date','Shift','Machine','Stage','Operator','Job','Planned','Actual','Good','Rejected','Rework','Time'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div></div></div>'
+}
+function loadData(){
+ $('body').innerHTML='<div class="empty">Loading PO tracking…</div>';
+ google.script.run.withSuccessHandler(d=>{DATA=d;buildPO(d.entries||[]);setOptions('productFilter',[...new Set(POS.map(p=>p.product).filter(Boolean))].sort(),'All products');setOptions('stageFilter',FLOW,'Any current stage');setOptions('machineFilter',[...new Set(POS.flatMap(p=>p.machines))].filter(Boolean).sort(),'Any machine');$('periodNote').textContent='Shows each PO journey up to '+(state.to?poDate(state.to):'the latest entry')+'. “Stalled” means no production entry for more than '+STALL_DAYS+' days. Updated '+new Date(d.generatedAt).toLocaleString('en-IN');render()}).withFailureHandler(err=>{$('body').innerHTML='<div class="empty">'+esc(err&&err.message||'Could not load PO data.')+'</div>'}).getPOTrackingData();
+}
+$('refreshBtn').addEventListener('click',loadData);
+$('themeBtn').addEventListener('click',()=>{const light=document.documentElement.dataset.theme!=='light';document.documentElement.dataset.theme=light?'light':'dark';$('themeBtn').textContent=light?'☾ Dark':'☀ Light'});
+$('viewBoard').addEventListener('click',()=>{state.view='board';render()});$('viewList').addEventListener('click',()=>{state.view='list';render()});
+$('search').addEventListener('input',e=>{state.q=e.target.value;render()});
+[['productFilter','product'],['stageFilter','stage'],['machineFilter','machine'],['statusFilter','status']].forEach(([id,key])=>$(id).addEventListener('change',e=>{state[key]=e.target.value;render()}));
+$('resetBtn').addEventListener('click',()=>{state={...state,q:'',product:'',stage:'',machine:'',status:'',view:state.view,open:null};$('search').value='';$('productFilter').value='';$('stageFilter').value='';$('machineFilter').value='';$('statusFilter').value='';render()});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-po]');if(t){state.open=state.open===t.dataset.po?null:t.dataset.po;render();if(state.open)$('detail').scrollIntoView({behavior:'smooth',block:'nearest'})}});
+loadData();
+</script>
+</body>
+</html>
